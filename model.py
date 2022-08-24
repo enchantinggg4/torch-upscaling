@@ -51,9 +51,9 @@ class Model(nn.Module):
              nn.BatchNorm2d(256),
              nn.ReLU(),
 
-            #  nn.Conv2d(256, 512, 3, 1, 0),
-            #  nn.BatchNorm2d(512),
-            #  nn.ReLU(),
+             nn.Conv2d(256, 256, 3, 1, 0),
+             nn.BatchNorm2d(256),
+             nn.ReLU(),
 
              # in_channels, out_channels, kernel_size, stride=1, padding=0, output_padding=
              nn.ConvTranspose2d(256, 3, kernel_size=4, stride=2, padding=3, bias=False),
