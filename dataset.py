@@ -29,8 +29,8 @@ class UpsampleDataset(Dataset):
         to_tensor = T.ToTensor()
         for idx, img_name in tqdm(enumerate(self.images)):
 
-            if idx > 2000:
-                break
+            # if idx > 2000:
+            #     break
         
             image = Image.open(img_name).convert('RGB')
 
