@@ -46,5 +46,6 @@ class UpsampleDataset(Dataset):
         return self.x.size(0)
     
     def __getitem__(self, idx):
-        print(idx)
-        return self.x[idx], self.y[idx]
+        b = (self.x[idx], self.y[idx])
+        print(f'Get {idx}')
+        return b

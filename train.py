@@ -22,7 +22,7 @@ from torch.utils.data import Dataset, DataLoader
 import torch.nn.functional as F
 
 batch_size = 32
-workers = 2
+workers = 0
 nc = 3
 nz = 25
 
