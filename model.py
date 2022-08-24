@@ -8,6 +8,21 @@ import torchvision.datasets as dset
 import numpy as np
 import torch.nn.functional as F
 
+# x2
+def conv_t_block_2x(in_ch, out_ch, dropout = 0.2):
+    return nn.Sequential(
+        nn.ConvTranspose2d(in_ch, out_ch, 4, 2, 3),
+        nn.Dropout(dropout),
+        
+    )
+# -4
+def conv_block(in_ch, out_ch, dropout = 0.2):
+    return nn.Sequential(
+        nn.Conv2d(in_ch, out_ch, 3, 1, 0),
+        nn.BatchNorm2d(out_ch),
+        nn.ReLU(),
+        nn.Dropout(dropout),
+    )
 
 class Model(nn.Module):
     def __init__(self):
@@ -29,13 +44,29 @@ class Model(nn.Module):
              nn.Conv2d(128, 256, 3, 1, 0),
              self.act_fn,
              # in_channels, out_channels, kernel_size, stride=1, padding=0, output_padding=
-             nn.ConvTranspose2d(256, 3, kernel_size=4, stride=2, padding=3, bias=False)
-        )
-        
-    def conv_block(self):
-        return nn.Sequential(
+             nn.ConvTranspose2d(256, 3, kernel_size=4, stride=2, padding=3, bias=False),
             
         )
+
+        self.v2 = self.create_v2()
+
+    def create_v2(self):
+        t = []
+        ch = 3
+        for i in range(7):
+            t.append(conv_block(ch, ch * 2))
+            ch = ch * 2
+            
+
+        # ch = 16
+        for i in range(1):
+            t.append(conv_t_block_2x(ch, ch * 2))
+            ch = ch * 2
+            
+        t.append(nn.Sequential(
+            nn.ConvTranspose2d(ch, 3, 5, 1, 0)
+        ))
+        return nn.Sequential(*t)
         
     def forward(self, x):
-        return self.some(x)
+        return self.v2(x)

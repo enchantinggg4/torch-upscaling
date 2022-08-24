@@ -31,11 +31,17 @@ ngpu = 1
 
 from dotenv import load_dotenv
 
+NO_WANDB = False
+
 
 
 
 def train(i_image_size, o_image_size, dataroot, batch_size):
-    wandb.init(project="upscaling")
+    if 'NO_WANDB' in os.environ:
+        NO_WANDB = True
+
+    if not NO_WANDB:
+        wandb.init(project="upscaling")
     device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu > 0) else "cpu")
     print(f'Using device {device}')
     model = Model().to(device)
@@ -65,12 +71,14 @@ def train(i_image_size, o_image_size, dataroot, batch_size):
 
 
             losses = np.append(losses, loss.item())
-            wandb.log({ 'loss': loss.item() })
+            if not NO_WANDB:
+                wandb.log({ 'loss': loss.item() })
         print(f'Epoch {epoch}, Mean Loss: {np.mean(losses)}')
 
 
 if __name__ == "__main__":
     load_dotenv()
+
     parser = argparse.ArgumentParser(description='Train model')
     parser.add_argument('-p', action='store', dest='path')
     parser.add_argument('-b', action='store', dest='batch_size', type=int)
