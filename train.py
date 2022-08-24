@@ -78,10 +78,14 @@ def train(i_image_size, o_image_size, dataroot, batch_size):
             losses = np.append(losses, loss.item())
             if not NO_WANDB:
                 # NO_WANDB=true
-                samples = wandb.Image(torch.cat((high_img[0:8], out[0:8])), caption="Upscaled")
+                
 
 
-                wandb.log({ 'loss': loss.item(), 'samples': samples })
+                wandb.log({ 'loss': loss.item() })
+
+                if i % 50 == 0:
+                    samples = wandb.Image(torch.cat((high_img[0:8], out[0:8])), caption="Upscaled")
+                    wandb.log({ 'samples': samples})
         print(f'Epoch {epoch}, Mean Loss: {np.mean(losses)}')
 
         torch.save(model.state_dict(), f'./checkpoints/epoch_{epoch}_{np.mean(losses)}.pth')
