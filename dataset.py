@@ -1,7 +1,9 @@
 
 from torch.utils.data import Dataset, DataLoader
 import torch.nn.functional as F
+import torchvision.transforms as T
 import os
+from PIL import Image
 from skimage import io, transform, color
 import torch
 from tqdm import tqdm
@@ -21,22 +23,25 @@ class UpsampleDataset(Dataset):
 
 
     def gpu_precache(self, device):
+
+        i_transform = T.Resize((self.i_image_size, self.i_image_size))
+        o_transform = T.Resize((self.o_image_size, self.o_image_size))
+        to_tensor = T.ToTensor()
         for idx, img_name in tqdm(enumerate(self.images)):
 
             if idx > 2000:
                 break
         
-            image = io.imread(img_name)
+            image = Image.open(img_name).convert('RGB')
 
-            if image.shape[2] > 3:
-                image = color.rgba2rgb(image)
+            # if image.shape[2] > 3:
+            #     image = color.rgba2rgb(image)
 
-            i_image = transform.resize(image, (self.i_image_size, self.i_image_size))
-            o_image = transform.resize(image, (self.o_image_size, self.o_image_size))
+            i_image = to_tensor(i_transform(image))
+            o_image = to_tensor(o_transform(image))
 
-
-            self.x.append(torch.tensor(i_image))
-            self.y.append(torch.tensor(o_image))
+            self.x.append(i_image)
+            self.y.append(o_image)
 
         self.x = torch.stack(self.x).to(device)
         self.y = torch.stack(self.y).to(device)
