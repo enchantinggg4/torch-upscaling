@@ -29,36 +29,35 @@ class Model(nn.Module):
         super(Model, self).__init__()
         
         dropout = 0.2
-        self.act_fn = nn.ReLU()
+        self.act_fn = nn.LeakyReLU(0.1, inplace=False)
         self.some = nn.Sequential(
              nn.Conv2d(3, 16, 3, 1, 0),
             #  nn.BatchNorm2d(16),
-             nn.LeakyReLU(),
+            self.act_fn,
 
              nn.Conv2d(16, 32, 3, 1, 0),
             #  nn.BatchNorm2d(32),
-             nn.LeakyReLU(),
+             self.act_fn,
 
              nn.Conv2d(32, 64, 3, 1, 0),
             #  nn.BatchNorm2d(64),
-             nn.LeakyReLU(),
+             self.act_fn,
 
              nn.Conv2d(64, 128, 3, 1, 0),
             #  nn.BatchNorm2d(128),
-             nn.LeakyReLU(),
+             self.act_fn,
 
              nn.Conv2d(128, 128, 3, 1, 0),
             #  nn.BatchNorm2d(256),
-             nn.LeakyReLU(),
+             self.act_fn,
 
              nn.Conv2d(128, 256, 3, 1, 0),
             #  nn.BatchNorm2d(256),
-             nn.LeakyReLU(),
+             self.act_fn,
 
              # in_channels, out_channels, kernel_size, stride=1, padding=0, output_padding=
              nn.ConvTranspose2d(256, 3, kernel_size=4, stride=2, padding=3, bias=False),
-             nn.Tanh()
-            
+            #  nn.Tanh()
         )
 
         # self.v2 = self.create_v2()

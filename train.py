@@ -28,6 +28,9 @@ nc = 3
 nz = 25
 
 
+lr = 1e-4
+weight_decay = 1e-6
+
 ngpu = 1
 
 from dotenv import load_dotenv
@@ -46,8 +49,8 @@ def train(i_image_size, o_image_size, dataroot, batch_size, checkpoints):
     device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu > 0) else "cpu")
     print(f'Using device {device}')
     model = Model().to(device)
-    optimizer = optim.Adam(model.parameters(), lr = 0.002)
-    # criterion = nn.L1Loss()
+    optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay, amsgrad=True)
+    
     criterion = nn.L1Loss()
 
     print(f'{sum(p.numel() for p in model.parameters())} parameters')
@@ -64,8 +67,8 @@ def train(i_image_size, o_image_size, dataroot, batch_size, checkpoints):
         losses = np.array([])
         for i, data in enumerate(dataloader, 0):
             
-            low_img = data[0].to(device, dtype=torch.float)#.permute(0, 3, 1, 2)
-            high_img = data[1].to(device, dtype=torch.float)#.permute(0, 3, 1, 2)
+            low_img = data[0].to(device, dtype=torch.float)
+            high_img = data[1].to(device, dtype=torch.float)
 
             optimizer.zero_grad()
 
