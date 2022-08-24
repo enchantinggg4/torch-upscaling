@@ -23,7 +23,7 @@ class UpsampleDataset(Dataset):
     def gpu_precache(self, device):
         for idx, img_name in tqdm(enumerate(self.images)):
 
-            if idx > 50:
+            if idx > 2000:
                 break
         
             image = io.imread(img_name)
