@@ -91,7 +91,7 @@ def train(i_image_size, o_image_size, dataroot, batch_size, checkpoints, inplace
                 wandb.log({ 'loss': loss.item() })
 
                 if i % 50 == 0:
-                    samples = wandb.Image(torch.cat((high_img[0:8], out[0:8])), caption="Upscaled")
+                    samples = wandb.Image(torch.cat((low_img[0:8], high_img[0:8], out[0:8])), caption="Upscaled")
                     wandb.log({ 'samples': samples})
         print(f'Epoch {epoch}, Mean Loss: {np.mean(losses)}')
 
