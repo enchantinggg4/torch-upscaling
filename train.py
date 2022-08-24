@@ -1,4 +1,5 @@
 from __future__ import print_function
+from pathlib import Path
 
 import torch
 import os
@@ -75,6 +76,8 @@ def train(i_image_size, o_image_size, dataroot, batch_size):
                 wandb.log({ 'loss': loss.item() })
         print(f'Epoch {epoch}, Mean Loss: {np.mean(losses)}')
 
+        torch.save(model.state_dict(), f'./checkpoints/epoch_{epoch}_{np.mean(losses)}.pth')
+
 
 if __name__ == "__main__":
     load_dotenv()
@@ -87,4 +90,5 @@ if __name__ == "__main__":
 
     print(f'Using dataset {args.path}')
     print(f'Using batch size {args.batch_size}')
+    Path('./checkpoints').mkdir(exist_ok=True)
     train(64, 100, args.path, args.batch_size)
