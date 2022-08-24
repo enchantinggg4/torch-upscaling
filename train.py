@@ -45,24 +45,20 @@ def train(i_image_size, o_image_size, dataroot, batch_size):
     model.train()
     for epoch in tqdm(range(0, 10)):
         for i, data in enumerate(dataloader, 0):
-            try:
             
-                low_img = data[0].to(device, dtype=torch.float).permute(0, 3, 1, 2)
-                high_img = data[1].to(device, dtype=torch.float).permute(0, 3, 1, 2)
+            low_img = data[0].to(device, dtype=torch.float).permute(0, 3, 1, 2)
+            high_img = data[1].to(device, dtype=torch.float).permute(0, 3, 1, 2)
 
-                optimizer.zero_grad()
+            optimizer.zero_grad()
 
-                out = model(low_img)
-                loss = criterion(out, high_img)
-                loss.backward()
-                optimizer.step()
+            out = model(low_img)
+            loss = criterion(out, high_img)
+            loss.backward()
+            optimizer.step()
 
 
-                # if i != 0 and i % 25 == 0:
-                print(f'Iteration {i}, Loss: {loss.item()}')
-                    
-            except:
-                pass
+            # if i != 0 and i % 25 == 0:
+            print(f'Iteration {i}, Loss: {loss.item()}')
 
 
 if __name__ == "__main__":
