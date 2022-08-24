@@ -32,19 +32,32 @@ class Model(nn.Module):
         self.act_fn = nn.ReLU()
         self.some = nn.Sequential(
              nn.Conv2d(3, 16, 3, 1, 0),
-             self.act_fn,
+             nn.BatchNorm2d(16),
+             nn.ReLU(),
+
              nn.Conv2d(16, 32, 3, 1, 0),
-             self.act_fn,
+             nn.BatchNorm2d(32),
+             nn.ReLU(),
+
              nn.Conv2d(32, 64, 3, 1, 0),
-             self.act_fn,
+             nn.BatchNorm2d(64),
+             nn.ReLU(),
+
              nn.Conv2d(64, 128, 3, 1, 0),
-             self.act_fn,
-             nn.Conv2d(128, 128, 3, 1, 0),
-             self.act_fn,
+             nn.BatchNorm2d(128),
+             nn.ReLU(),
+
              nn.Conv2d(128, 256, 3, 1, 0),
-             self.act_fn,
+             nn.BatchNorm2d(256),
+             nn.ReLU(),
+
+             nn.Conv2d(256, 512, 3, 1, 0),
+             nn.BatchNorm2d(512),
+             nn.ReLU(),
+
              # in_channels, out_channels, kernel_size, stride=1, padding=0, output_padding=
-             nn.ConvTranspose2d(256, 3, kernel_size=4, stride=2, padding=3, bias=False),
+             nn.ConvTranspose2d(512, 3, kernel_size=4, stride=2, padding=3, bias=False),
+             nn.Tanh()
             
         )
 

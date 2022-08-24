@@ -37,7 +37,7 @@ NO_WANDB = False
 
 
 
-def train(i_image_size, o_image_size, dataroot, batch_size):
+def train(i_image_size, o_image_size, dataroot, batch_size, checkpoints):
     global NO_WANDB
     if 'NO_WANDB' in os.environ:
         NO_WANDB = True
@@ -88,13 +88,15 @@ def train(i_image_size, o_image_size, dataroot, batch_size):
                     wandb.log({ 'samples': samples})
         print(f'Epoch {epoch}, Mean Loss: {np.mean(losses)}')
 
-        torch.save(model.state_dict(), f'./checkpoints/epoch_{epoch}_{np.mean(losses)}.pth')
+        if checkpoints:
+            torch.save(model.state_dict(), f'./checkpoints/epoch_{epoch}_{np.mean(losses)}.pth')
 
 
 if __name__ == "__main__":
     load_dotenv()
 
     parser = argparse.ArgumentParser(description='Train model')
+    parser.add_argument('-c', action='store_true', dest='no_checkpoint')
     parser.add_argument('-p', action='store', dest='path')
     parser.add_argument('-b', action='store', dest='batch_size', type=int)
 
@@ -102,5 +104,7 @@ if __name__ == "__main__":
 
     print(f'Using dataset {args.path}')
     print(f'Using batch size {args.batch_size}')
+    print(f'Saving checkpoints: {not args.no_checkpoint}')
     Path('./checkpoints').mkdir(exist_ok=True)
-    train(64, 100, args.path, args.batch_size)
+
+    train(64, 100, args.path, args.batch_size, not args.no_checkpoint)
