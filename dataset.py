@@ -12,7 +12,10 @@ class UpsampleDataset(Dataset):
         self.i_image_size = i_image_size
         self.o_image_size = o_image_size
 
-        self.precache = []
+        
+
+        self.x = []
+        self.y = []
 
         print(f'Got {len(self.images)} images')
 
@@ -29,12 +32,15 @@ class UpsampleDataset(Dataset):
             o_image = transform.resize(image, (self.o_image_size, self.o_image_size))
 
 
-            self.precache.append((torch.tensor(i_image).to(device), torch.tensor(o_image).to(device)))
+            self.x.append(torch.tensor(i_image))
+            self.y.append(torch.tensor(o_image))
 
+        self.x = torch.stack(self.x).to(device)
+        self.y = torch.stack(self.y).to(device)
         print('Device precache complete')
         
     def __len__(self):
         return len(self.images)
     
     def __getitem__(self, idx):
-        return self.precache[idx]
+        return self.x[idx], self.y[idx]
