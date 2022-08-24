@@ -37,6 +37,7 @@ NO_WANDB = False
 
 
 def train(i_image_size, o_image_size, dataroot, batch_size):
+    global NO_WANDB
     if 'NO_WANDB' in os.environ:
         NO_WANDB = True
     else:
