@@ -22,6 +22,9 @@ class UpsampleDataset(Dataset):
 
     def gpu_precache(self, device):
         for idx, img_name in tqdm(enumerate(self.images)):
+
+            if idx > 500:
+                break
         
             image = io.imread(img_name)
 
@@ -40,7 +43,7 @@ class UpsampleDataset(Dataset):
         print('Device precache complete')
         
     def __len__(self):
-        return len(self.images)
+        return self.x.size(0)
     
     def __getitem__(self, idx):
         return self.x[idx], self.y[idx]
