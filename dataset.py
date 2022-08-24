@@ -23,7 +23,7 @@ class UpsampleDataset(Dataset):
 
 
     def transform_dataset(self, out):
-        self.images = [os.path.join(dp, f) for dp, dn, filenames in os.walk(path) for f in filenames if os.path.splitext(f)[1] in ['.png', '.jpg', '.jpeg']]
+        self.images = [os.path.join(dp, f) for dp, dn, filenames in os.walk(self.root_dir) for f in filenames if os.path.splitext(f)[1] in ['.png', '.jpg', '.jpeg']]
         i_transform = T.Resize((self.i_image_size, self.i_image_size))
         o_transform = T.Resize((self.o_image_size, self.o_image_size))
         
