@@ -12,7 +12,7 @@ from pathlib import Path
 from torchvision.utils import save_image
 
 class UpsampleDataset(Dataset):
-    def __init__(self, path, i_image_size, o_image_size):
+    def __init__(self, path, i_image_size, o_image_size, is_inplace):
         self.root_dir = path
         
         self.i_image_size = i_image_size
@@ -20,6 +20,10 @@ class UpsampleDataset(Dataset):
 
         self.x = []
         self.y = []
+
+        self.images = [os.path.join(dp, f) for dp, dn, filenames in os.walk(self.root_dir) for f in filenames if os.path.splitext(f)[1] in ['.png', '.jpg', '.jpeg']]
+
+        self.is_inplace = is_inplace
 
 
     def transform_dataset(self, out):
@@ -71,15 +75,19 @@ class UpsampleDataset(Dataset):
         return self.len
     
     def __getitem__(self, idx):
+        # if self.is_inplace:
+        #     image = Image.open(self.images[idx])
+        
         i_transform = T.Resize((self.i_image_size, self.i_image_size))
         o_transform = T.Resize((self.o_image_size, self.o_image_size))
         to_tensor = T.ToTensor()
-        i_image = Image.open(os.path.join(self.root_dir, 'x', f'{idx}.jpg')).convert('RGB')
-        o_image = Image.open(os.path.join(self.root_dir, 'x', f'{idx}.jpg')).convert('RGB')
 
-        i_image = i_transform(to_tensor(i_image))
-        o_image = o_transform(to_tensor(o_image))
-        return i_image, o_image
+        i_image = Image.open(os.path.join(self.root_dir, 'x', f'{idx}.jpg')).convert('RGB')
+        o_image = Image.open(os.path.join(self.root_dir, 'y', f'{idx}.jpg')).convert('RGB')
+
+        # i_image = i_transform(to_tensor(i_image))
+        # o_image = o_transform(to_tensor(o_image))
+        return to_tensor(i_image), to_tensor(o_image)
 
 
 if __name__ == "__main__":

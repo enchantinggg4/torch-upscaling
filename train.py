@@ -40,7 +40,7 @@ NO_WANDB = False
 
 
 
-def train(i_image_size, o_image_size, dataroot, batch_size, checkpoints):
+def train(i_image_size, o_image_size, dataroot, batch_size, checkpoints, inplace_dataset):
     global NO_WANDB
     if 'NO_WANDB' in os.environ:
         NO_WANDB = True
@@ -57,8 +57,9 @@ def train(i_image_size, o_image_size, dataroot, batch_size, checkpoints):
 
 
 
-    dataset = UpsampleDataset(dataroot, i_image_size, o_image_size)
-    dataset.gpu_precache(device)
+    dataset = UpsampleDataset(dataroot, i_image_size, o_image_size, is_inplace=inplace_dataset)
+    
+    
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size,
                                                 shuffle=True, num_workers=workers)
 
@@ -100,6 +101,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Train model')
     parser.add_argument('-c', action='store_true', dest='no_checkpoint')
+    parser.add_argument('-i', action='store_true', dest='inplace_dataset')
     parser.add_argument('-p', action='store', dest='path')
     parser.add_argument('-b', action='store', dest='batch_size', type=int)
 
@@ -110,4 +112,4 @@ if __name__ == "__main__":
     print(f'Saving checkpoints: {not args.no_checkpoint}')
     Path('./checkpoints').mkdir(exist_ok=True)
 
-    train(64, 100, args.path, args.batch_size, not args.no_checkpoint)
+    train(64, 100, args.path, args.batch_size, not args.no_checkpoint, args.inplace_dataset)
