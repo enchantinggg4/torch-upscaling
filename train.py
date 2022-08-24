@@ -49,6 +49,9 @@ def train(i_image_size, o_image_size, dataroot, batch_size):
     optimizer = optim.Adam(model.parameters(), lr = 0.002)
     criterion = nn.L1Loss()
 
+    print(f'{sum(p.numel() for p in model.parameters())} parameters')
+
+
 
     dataset = UpsampleDataset(dataroot, i_image_size, o_image_size)
     dataset.gpu_precache(device)
