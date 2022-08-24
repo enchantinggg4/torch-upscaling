@@ -20,6 +20,7 @@ from skimage import io, transform
 import argparse
 from torch.utils.data import Dataset, DataLoader
 import torch.nn.functional as F
+import wandb
 
 workers = 0
 nc = 3
@@ -28,8 +29,13 @@ nz = 25
 
 ngpu = 1
 
+from dotenv import load_dotenv
+
+
+
 
 def train(i_image_size, o_image_size, dataroot, batch_size):
+    wandb.init(project="upscaling")
     device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu > 0) else "cpu")
     print(f'Using device {device}')
     model = Model().to(device)
@@ -44,6 +50,7 @@ def train(i_image_size, o_image_size, dataroot, batch_size):
 
     model.train()
     for epoch in tqdm(range(0, 10)):
+        losses = np.array([])
         for i, data in enumerate(dataloader, 0):
             
             low_img = data[0].to(device, dtype=torch.float)#.permute(0, 3, 1, 2)
@@ -57,11 +64,14 @@ def train(i_image_size, o_image_size, dataroot, batch_size):
             optimizer.step()
 
 
-            # if i != 0 and i % 25 == 0:
-            print(f'Iteration {i}, Loss: {loss.item()}')
+            losses = np.append(losses, loss.item())
+        
+        wandb.log({ 'loss': np.mean(losses)})
+        print(f'Epoch {epoch}, Mean Loss: {np.mean(losses)}')
 
 
 if __name__ == "__main__":
+    load_dotenv()
     parser = argparse.ArgumentParser(description='Train model')
     parser.add_argument('-p', action='store', dest='path')
     parser.add_argument('-b', action='store', dest='batch_size', type=int)
