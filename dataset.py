@@ -41,7 +41,8 @@ class UpsampleDataset(Dataset):
         self.x = torch.stack(self.x).to(device)
         self.y = torch.stack(self.y).to(device)
         print('Device precache complete')
-        print(self[0])
+        print(len(self))
+        print(self.x.size(0))
         
     def __len__(self):
         return self.x.size(0)
