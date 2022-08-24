@@ -58,8 +58,8 @@ def train(i_image_size, o_image_size, dataroot, batch_size):
                 optimizer.step()
 
 
-                if i != 0 and i % 25 == 0:
-                    print(f'Iteration {i}, Loss: {loss.item()}')
+                # if i != 0 and i % 25 == 0:
+                print(f'Iteration {i}, Loss: {loss.item()}')
                     
             except:
                 pass
