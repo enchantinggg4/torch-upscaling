@@ -39,6 +39,7 @@ def train(i_image_size, o_image_size, dataroot):
 
 
     dataset = UpsampleDataset(dataroot, i_image_size, o_image_size)
+    dataset.gpu_precache(device)
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size,
                                                 shuffle=True, num_workers=workers)
 
