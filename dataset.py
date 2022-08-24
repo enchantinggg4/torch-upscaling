@@ -72,18 +72,22 @@ class UpsampleDataset(Dataset):
         
 
     def __len__(self):
-        return self.len
+        return len(self.images) if self.is_inplace else self.len
     
     def __getitem__(self, idx):
-        # if self.is_inplace:
-        #     image = Image.open(self.images[idx])
-        
+
         i_transform = T.Resize((self.i_image_size, self.i_image_size))
         o_transform = T.Resize((self.o_image_size, self.o_image_size))
         to_tensor = T.ToTensor()
 
-        i_image = Image.open(os.path.join(self.root_dir, 'x', f'{idx}.jpg')).convert('RGB')
-        o_image = Image.open(os.path.join(self.root_dir, 'y', f'{idx}.jpg')).convert('RGB')
+        if self.is_inplace:
+            image = Image.open(self.images[idx]).convert('RGB')
+
+            i_image = i_transform(image)
+            o_image = o_transform(image)
+        else:
+            i_image = Image.open(os.path.join(self.root_dir, 'x', f'{idx}.jpg')).convert('RGB')
+            o_image = Image.open(os.path.join(self.root_dir, 'y', f'{idx}.jpg')).convert('RGB')
 
         # i_image = i_transform(to_tensor(i_image))
         # o_image = o_transform(to_tensor(o_image))

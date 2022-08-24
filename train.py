@@ -113,6 +113,7 @@ if __name__ == "__main__":
     print(f'Using dataset {args.path}')
     print(f'Using batch size {args.batch_size}')
     print(f'Saving checkpoints: {not args.no_checkpoint}')
+    print(f'Inplace dataset: {args.inplace_dataset}')
     Path('./checkpoints').mkdir(exist_ok=True)
 
     train(64, 100, args.path, args.batch_size, not args.no_checkpoint, args.inplace_dataset)
