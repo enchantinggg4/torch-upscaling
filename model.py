@@ -48,7 +48,7 @@ class Model(nn.Module):
             
         )
 
-        self.v2 = self.create_v2()
+        # self.v2 = self.create_v2()
 
     def create_v2(self):
         t = []
@@ -69,4 +69,4 @@ class Model(nn.Module):
         return nn.Sequential(*t)
         
     def forward(self, x):
-        return self.v2(x)
+        return self.some(x)
