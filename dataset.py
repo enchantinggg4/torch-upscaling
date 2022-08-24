@@ -22,7 +22,7 @@ class UpsampleDataset(Dataset):
         self.y = []
 
 
-    def transform_dataset(self):
+    def transform_dataset(self, out):
         self.images = [os.path.join(dp, f) for dp, dn, filenames in os.walk(path) for f in filenames if os.path.splitext(f)[1] in ['.png', '.jpg', '.jpeg']]
         i_transform = T.Resize((self.i_image_size, self.i_image_size))
         o_transform = T.Resize((self.o_image_size, self.o_image_size))
@@ -33,8 +33,9 @@ class UpsampleDataset(Dataset):
             i_image = i_transform(image)
             o_image = o_transform(image)
 
-            i_image.save(f'dataset/x/{idx}.jpg')
-            o_image.save(f'dataset/y/{idx}.jpg')
+            
+            i_image.save(os.path.join(out, f'x/{idx}.jpg'))
+            o_image.save(os.path.join(out, f'y/{idx}.jpg'))
 
 
 
@@ -85,6 +86,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Train model')
     parser.add_argument('-p', action='store', dest='path')
+    parser.add_argument('-o', action='store', dest='out')
 
     args = parser.parse_args()
 
@@ -93,4 +95,4 @@ if __name__ == "__main__":
     Path('./dataset/x').mkdir(parents=True, exist_ok=True)
     Path('./dataset/y').mkdir(parents=True, exist_ok=True)
     
-    UpsampleDataset(args.path, 64, 100).transform_dataset()
+    UpsampleDataset(args.path, 64, 100).transform_dataset(args.out)
