@@ -92,7 +92,7 @@ if __name__ == "__main__":
 
 
     # transform all images to resized
-    Path('./dataset/x').mkdir(parents=True, exist_ok=True)
-    Path('./dataset/y').mkdir(parents=True, exist_ok=True)
+    Path(os.path.join(args.out, 'x')).mkdir(parents=True, exist_ok=True)
+    Path(os.path.join(args.out, 'y')).mkdir(parents=True, exist_ok=True)
     
     UpsampleDataset(args.path, 64, 100).transform_dataset(args.out)
