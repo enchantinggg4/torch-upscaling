@@ -48,7 +48,7 @@ def train(i_image_size, o_image_size, dataroot, batch_size):
     model = Model().to(device)
     optimizer = optim.Adam(model.parameters(), lr = 0.002)
     # criterion = nn.L1Loss()
-    criterion = nn.MSELoss(reduction = 'sum')
+    criterion = nn.L1Loss()
 
     print(f'{sum(p.numel() for p in model.parameters())} parameters')
 
