@@ -39,8 +39,7 @@ NO_WANDB = False
 def train(i_image_size, o_image_size, dataroot, batch_size):
     if 'NO_WANDB' in os.environ:
         NO_WANDB = True
-
-    if not NO_WANDB:
+    else:
         wandb.init(project="upscaling")
     device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu > 0) else "cpu")
     print(f'Using device {device}')
