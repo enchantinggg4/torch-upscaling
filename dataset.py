@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import os
 from skimage import io, transform, color
 import torch
-
+from tqdm import tqdm
 class UpsampleDataset(Dataset):
     def __init__(self, path, i_image_size, o_image_size):
         self.root_dir = path
@@ -21,7 +21,7 @@ class UpsampleDataset(Dataset):
 
 
     def gpu_precache(self, device):
-        for idx, img_name in enumerate(self.images):
+        for idx, img_name in tqdm(enumerate(self.images)):
         
             image = io.imread(img_name)
 
