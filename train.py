@@ -21,7 +21,6 @@ import argparse
 from torch.utils.data import Dataset, DataLoader
 import torch.nn.functional as F
 
-batch_size = 32
 workers = 0
 nc = 3
 nz = 25
@@ -30,7 +29,7 @@ nz = 25
 ngpu = 1
 
 
-def train(i_image_size, o_image_size, dataroot):
+def train(i_image_size, o_image_size, dataroot, batch_size):
     device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu > 0) else "cpu")
     print(f'Using device {device}')
     model = Model().to(device)
@@ -69,7 +68,10 @@ def train(i_image_size, o_image_size, dataroot):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train model')
     parser.add_argument('-p', action='store', dest='path')
+    parser.add_argument('-b', action='store', dest='batch_size', type=int)
 
     args = parser.parse_args()
 
-    train(64, 100, args.path)
+    print(f'Using dataset {args.path}')
+    print(f'Using batch size {args.batch_size}')
+    train(64, 100, args.path, args.batch_size)
