@@ -65,8 +65,7 @@ def train(i_image_size, o_image_size, dataroot, batch_size):
 
 
             losses = np.append(losses, loss.item())
-        
-        wandb.log({ 'loss': np.mean(losses)})
+            wandb.log({ 'loss': loss.item() })
         print(f'Epoch {epoch}, Mean Loss: {np.mean(losses)}')
 
 
