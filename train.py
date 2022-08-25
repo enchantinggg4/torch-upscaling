@@ -40,7 +40,7 @@ NO_WANDB = False
 
 
 
-def train(i_image_size, o_image_size, dataroot, batch_size, checkpoints, inplace_dataset):
+def train(i_image_size, o_image_size, epochs, dataroot, batch_size, checkpoints, inplace_dataset):
     global NO_WANDB
     if 'NO_WANDB' in os.environ:
         NO_WANDB = True
@@ -67,7 +67,7 @@ def train(i_image_size, o_image_size, dataroot, batch_size, checkpoints, inplace
                                                 shuffle=True, num_workers=workers)
 
     model.train()
-    for epoch in tqdm(range(0, 10)):
+    for epoch in tqdm(range(0, epochs)):
         losses = np.array([])
         for i, data in enumerate(dataloader, 0):
             
@@ -107,6 +107,7 @@ if __name__ == "__main__":
     parser.add_argument('-i', action='store_true', dest='inplace_dataset')
     parser.add_argument('-p', action='store', dest='path')
     parser.add_argument('-b', action='store', dest='batch_size', type=int)
+    parser.add_argument('-e', action='store', dest='epochs', type=int)
 
     args = parser.parse_args()
 
@@ -114,6 +115,8 @@ if __name__ == "__main__":
     print(f'Using batch size {args.batch_size}')
     print(f'Saving checkpoints: {not args.no_checkpoint}')
     print(f'Inplace dataset: {args.inplace_dataset}')
+
+    print(f'Training for {args.epochs} epochs')
     Path('./checkpoints').mkdir(exist_ok=True)
 
-    train(64, 100, args.path, args.batch_size, not args.no_checkpoint, args.inplace_dataset)
+    train(64, 100, args.epochs, args.path, args.batch_size, not args.no_checkpoint, args.inplace_dataset)
