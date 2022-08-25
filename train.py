@@ -1,6 +1,7 @@
 from __future__ import print_function
 from pathlib import Path
 
+import torchvision.transforms as T
 import torch
 import os
 import torch
@@ -51,7 +52,7 @@ def train(i_image_size, o_image_size, epochs, dataroot, batch_size, checkpoints,
     device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu > 0) else "cpu")
     print(f'Using device {device}')
 
-    model = Model2(res_len=8).to(device)
+    model = Model2(res_len=12).to(device)
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay, amsgrad=True)
     
     criterion = nn.L1Loss()
@@ -93,8 +94,12 @@ def train(i_image_size, o_image_size, epochs, dataroot, batch_size, checkpoints,
 
                 wandb.log({ 'loss': loss.item() })
 
-                if i % 50 == 0:
-                    samples = wandb.Image(torch.cat((high_img[0:8], out[0:8])), caption="Upscaled")
+                if i % 1 == 0:
+                    slides = torch.cat((
+                        T.Resize((o_image_size, o_image_size))(low_img),
+                        high_img[0:8],
+                        out[0:8]))
+                    samples = wandb.Image(slides, caption="Upscaled")
                     wandb.log({ 'samples': samples})
         print(f'Epoch {epoch}, Mean Loss: {np.mean(losses)}')
 
