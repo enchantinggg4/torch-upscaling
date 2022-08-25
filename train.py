@@ -96,7 +96,7 @@ def train(i_image_size, o_image_size, epochs, dataroot, batch_size, checkpoints,
 
                 if i % 1 == 0:
                     slides = torch.cat((
-                        T.Resize((o_image_size, o_image_size))(low_img),
+                        T.Resize((o_image_size, o_image_size))(low_img[0:8]),
                         high_img[0:8],
                         out[0:8]))
                     samples = wandb.Image(slides, caption="Upscaled")
