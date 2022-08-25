@@ -42,8 +42,8 @@ if __name__ == "__main__":
     model = Model()
     model.load_state_dict(torch.load(args.model, map_location=torch.device('cpu')))
 
-    img = T.ToTensor()(Image.open(args.input))
-    
+    img = T.ToTensor()(Image.open(args.input).convert('RGB'))
+
     img = torch.unsqueeze(img, 0)
     T.ToPILImage()(img[0]).save('./generated/in.jpg')
     
