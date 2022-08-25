@@ -103,11 +103,13 @@ if __name__ == "__main__":
     load_dotenv()
 
     parser = argparse.ArgumentParser(description='Train model')
-    parser.add_argument('-c', action='store_true', dest='no_checkpoint')
-    parser.add_argument('-i', action='store_true', dest='inplace_dataset')
-    parser.add_argument('-p', action='store', dest='path')
-    parser.add_argument('-b', action='store', dest='batch_size', type=int)
-    parser.add_argument('-e', action='store', dest='epochs', type=int)
+    parser.add_argument('-nocp', action='store_true', dest='no_checkpoint')
+    parser.add_argument('-inplace', action='store_true', dest='inplace_dataset')
+    parser.add_argument('-data', action='store', dest='path')
+    parser.add_argument('-batch', action='store', dest='batch_size', type=int)
+    parser.add_argument('-epochs', action='store', dest='epochs', type=int)
+    parser.add_argument('-i_size', action='store', dest='i_size', type=int)
+    parser.add_argument('-o_size', action='store', dest='o_size', type=int)
 
     args = parser.parse_args()
 
@@ -116,7 +118,9 @@ if __name__ == "__main__":
     print(f'Saving checkpoints: {not args.no_checkpoint}')
     print(f'Inplace dataset: {args.inplace_dataset}')
 
+    print(f'Upscaling from {args.i_size}x{args.i_size} to {args.o_size}x{args.o_size}')
+
     print(f'Training for {args.epochs} epochs')
     Path('./checkpoints').mkdir(exist_ok=True)
 
-    train(64, 100, args.epochs, args.path, args.batch_size, not args.no_checkpoint, args.inplace_dataset)
+    train(args.i_size, args.o_size, args.epochs, args.path, args.batch_size, not args.no_checkpoint, args.inplace_dataset)
