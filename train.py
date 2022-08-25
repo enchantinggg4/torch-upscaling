@@ -23,6 +23,8 @@ from torch.utils.data import Dataset, DataLoader
 import torch.nn.functional as F
 import wandb
 
+from model2 import Model2
+
 workers = 0
 nc = 3
 nz = 25
@@ -48,7 +50,8 @@ def train(i_image_size, o_image_size, epochs, dataroot, batch_size, checkpoints,
         wandb.init(project="upscaling")
     device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu > 0) else "cpu")
     print(f'Using device {device}')
-    model = Model().to(device)
+    
+    model = Model2(res_len=16).to(device)
     optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay, amsgrad=True)
     
     criterion = nn.L1Loss()
