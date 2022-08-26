@@ -55,7 +55,7 @@ def train(i_image_size, o_image_size, epochs, dataroot, batch_size, checkpoints,
 
     # Models
     netG = Model2(res_len=10).to(device)
-    netD = Discriminator()
+    netD = Discriminator().to(device)
 
     # Optimizers
     optimizerD = optim.Adam(netD.parameters(), lr=lr)
