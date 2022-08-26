@@ -24,7 +24,7 @@ from torch.utils.data import Dataset, DataLoader
 import torch.nn.functional as F
 import wandb
 
-from model2 import Model2
+from model2 import Discriminator, Model2
 
 workers = 0
 nc = 3
@@ -52,59 +52,93 @@ def train(i_image_size, o_image_size, epochs, dataroot, batch_size, checkpoints,
     device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu > 0) else "cpu")
     print(f'Using device {device}')
 
-    model = Model2(res_len=10).to(device)
-    optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay, amsgrad=True)
+
+    # Models
+    netG = Model2(res_len=10).to(device)
+    netD = Discriminator()
+
+    # Optimizers
+    optimizerD = optim.Adam(netD.parameters(), lr=lr)
+    optimizerG = optim.Adam(netG.parameters(), lr=lr)
     
-    criterion = nn.L1Loss()
+    # Loss functions
+    beta = 1e-3  # the coefficient to weight the adversarial loss in the perceptual loss
 
-    print(f'{sum(p.numel() for p in model.parameters())} parameters')
+    content_loss_criterion = nn.MSELoss() # for pixel difference loss
+    adversarial_loss_criterion = nn.BCEWithLogitsLoss() # for discriminator loss
 
-
+    print(f'{sum(p.numel() for p in netG.parameters())} parameters')
 
     dataset = UpsampleDataset(dataroot, i_image_size, o_image_size, is_inplace=inplace_dataset)
     
-    if inplace_dataset:
-        pass
-    else:
-        dataset.gpu_precache(device)
-    dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size,
-                                                shuffle=True, num_workers=workers)
+    dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=workers)
 
-    model.train()
     for epoch in tqdm(range(0, epochs)):
         losses = np.array([])
         for i, data in enumerate(dataloader, 0):
             
-            low_img = data[0].to(device, dtype=torch.float)
-            high_img = data[1].to(device, dtype=torch.float)
+            lr_img = data[0].to(device, dtype=torch.float)
+            hr_img = data[1].to(device, dtype=torch.float)
+            b_size = hr_img.size(0)
+            
+            # GENERATOR UPDATE
 
-            optimizer.zero_grad()
+            # Generate
+            sr_img = netG(lr_img)
 
-            out = model(low_img)
-            loss = criterion(out, high_img)
-            loss.backward()
-            optimizer.step()
+            # Discriminate super-resolved (SR) images
+            sr_discriminated = netD(hr_img)
+            
+            
+            content_loss = content_loss_criterion(sr_img, hr_img)
+            adversarial_loss_g = adversarial_loss_criterion(sr_discriminated, torch.ones_like(sr_discriminated))
+            perceptual_loss = content_loss + beta * adversarial_loss_g
+            
+            # Back-prop.
+            optimizerG.zero_grad()
+            perceptual_loss.backward()
+            
+            losses = np.append(losses, perceptual_loss.item())
 
 
-            losses = np.append(losses, loss.item())
+            # Update generator
+            optimizerG.step()
+
+            # DISCRIMINATOR UPDATE
+
+            # Discriminate super-resolution (SR) and high-resolution (HR) images
+            hr_discriminated = netD(hr_img)
+            sr_discriminated = netD(sr_img.detach())
+
+            # Binary Cross-Entropy loss
+            adversarial_loss = adversarial_loss_criterion(sr_discriminated, torch.zeros_like(sr_discriminated)) + \
+                            adversarial_loss_criterion(hr_discriminated, torch.ones_like(hr_discriminated))
+
+            # Back-prop.
+            optimizerD.zero_grad()
+            adversarial_loss.backward()
+            
+            
+            # Update discriminator
+            optimizerD.step()
+            
             if not NO_WANDB:
                 # NO_WANDB=true
-                
 
-
-                wandb.log({ 'loss': loss.item() })
+                wandb.log({ 'content_loss': content_loss.item(), 'adversarial_loss_d': adversarial_loss.item(), 'adversarial_loss_g': adversarial_loss_g.item(), 'loss': perceptual_loss.item()   })
 
                 if i % 100 == 0:
                     slides = torch.cat((
-                        T.Resize((o_image_size, o_image_size))(low_img[0:8]),
-                        high_img[0:8],
-                        out[0:8]))
+                        T.Resize((o_image_size, o_image_size))(lr_img[0:8]),
+                        hr_img[0:8],
+                        sr_img[0:8]))
                     samples = wandb.Image(slides, caption="Upscaled")
                     wandb.log({ 'samples': samples})
         print(f'Epoch {epoch}, Mean Loss: {np.mean(losses)}')
 
         if checkpoints:
-            torch.save(model.state_dict(), f'./checkpoints/epoch_{epoch}_{np.mean(losses)}.pth')
+            torch.save(netG.state_dict(), f'./checkpoints/G_epoch_{epoch}.pth')
+            torch.save(netD.state_dict(), f'./checkpoints/D_epoch_{epoch}.pth')
 
 
 if __name__ == "__main__":
