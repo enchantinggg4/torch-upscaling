@@ -45,6 +45,9 @@ NO_WANDB = False
 
 def train(i_image_size, o_image_size, epochs, dataroot, batch_size, checkpoints, inplace_dataset):
     global NO_WANDB
+
+
+    last_mean_loss = 10000000
     if 'NO_WANDB' in os.environ:
         NO_WANDB = True
     else:
@@ -136,7 +139,8 @@ def train(i_image_size, o_image_size, epochs, dataroot, batch_size, checkpoints,
                     wandb.log({ 'samples': samples})
         print(f'Epoch {epoch}, Mean Loss: {np.mean(losses)}')
 
-        if checkpoints:
+        if checkpoints and last_mean_loss > np.mean(losses):
+            last_mean_loss = np.mean(losses)
             torch.save(netG.state_dict(), f'./checkpoints/G_epoch_{epoch}.pth')
             torch.save(netD.state_dict(), f'./checkpoints/D_epoch_{epoch}.pth')
 
