@@ -141,8 +141,8 @@ def train(i_image_size, o_image_size, epochs, dataroot, batch_size, checkpoints,
 
         if checkpoints and last_mean_loss > np.mean(losses):
             last_mean_loss = np.mean(losses)
-            torch.save(netG.state_dict(), f'./checkpoints/G_epoch_{epoch}.pth')
-            torch.save(netD.state_dict(), f'./checkpoints/D_epoch_{epoch}.pth')
+            torch.save(netG.state_dict(), f'./checkpoints/best_g.pth')
+            torch.save(netD.state_dict(), f'./checkpoints/best_d.pth')
 
 
 if __name__ == "__main__":

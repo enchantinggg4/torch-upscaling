@@ -24,6 +24,8 @@ import torch.nn.functional as F
 import torchvision.transforms as T
 from PIL import Image
 
+from model2 import Model2
+
 
 
 if __name__ == "__main__":
@@ -39,7 +41,7 @@ if __name__ == "__main__":
     print(f'Upscaling file {args.input}')
 
 
-    model = Model()
+    model = Model2(10)
     model.load_state_dict(torch.load(args.model, map_location=torch.device('cpu')))
 
     img = T.ToTensor()(Image.open(args.input).convert('RGB'))
