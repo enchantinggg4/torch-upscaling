@@ -1,5 +1,6 @@
 from __future__ import print_function
 from pathlib import Path
+from torchvision.utils import save_image
 
 import torch
 import os
@@ -44,12 +45,16 @@ if __name__ == "__main__":
     model = Model2(10)
     model.load_state_dict(torch.load(args.model, map_location=torch.device('cpu')))
 
-    img = T.ToTensor()(Image.open(args.input).convert('RGB'))
+    # resize = T.Resize((256, 256))
+    # img = resize(Image.open(args.input).convert('RGB'))
+    img = Image.open(args.input).convert('RGB')
+    img = T.ToTensor()(img)
 
     img = torch.unsqueeze(img, 0)
     T.ToPILImage()(img[0]).save('./generated/in.jpg')
     
     out = model(img)
 
-    T.ToPILImage()(out[0]).save(f'./generated/out.jpg')
+    save_image(out[0], f'./generated/out.jpg')
+    # T.ToPILImage()(out[0]).save(f'./generated/out.jpg')
     

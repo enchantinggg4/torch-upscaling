@@ -25,6 +25,7 @@ import torch.nn.functional as F
 import wandb
 
 from model2 import Discriminator, Model2
+from model3 import Model3
 
 workers = 0
 nc = 3
@@ -57,7 +58,7 @@ def train(i_image_size, o_image_size, epochs, dataroot, batch_size, checkpoints,
 
 
     # Models
-    netG = Model2(res_len=10).to(device)
+    netG = Model3().to(device)
     netD = Discriminator().to(device)
 
     # Optimizers
