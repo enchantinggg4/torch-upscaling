@@ -61,6 +61,10 @@ def train(i_image_size, o_image_size, epochs, dataroot, batch_size, checkpoints,
     netG = Model3().to(device)
     netD = Discriminator().to(device)
 
+    if device.type == "cuda":
+        netG = netG.half()
+        netD = netD.half()
+
     # Optimizers
     optimizerD = optim.Adam(netD.parameters(), lr=lr)
     optimizerG = optim.Adam(netG.parameters(), lr=lr)
@@ -84,9 +88,13 @@ def train(i_image_size, o_image_size, epochs, dataroot, batch_size, checkpoints,
         losses = np.array([])
         for batch_idx, data in enumerate(dataloader, 0):
             
+            
             lr_img = data[0].to(device, dtype=torch.float)
             hr_img = data[1].to(device, dtype=torch.float)
-            b_size = hr_img.size(0)
+
+            if device.type == "cuda":
+                lr_img = lr_img.half()
+                hr_img = hr_img.half()
             
             # GENERATOR UPDATE
 
