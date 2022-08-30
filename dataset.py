@@ -64,7 +64,7 @@ class UpsampleDataset(Dataset):
         if self.is_inplace:
             image = Image.open(self.images[idx]).convert('RGB')
 
-            i_image = i_transform(image)
+            i_image = o_transform(i_transform(image))
             o_image = o_transform(image)
         else:
             i_image = Image.open(os.path.join(self.root_dir, 'x', f'{idx}.jpg')).convert('RGB')
