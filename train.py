@@ -68,13 +68,13 @@ def train(i_image_size, o_image_size, epochs, dataroot, batch_size, checkpoints,
     # Optimizers
 
     beta1 = 0.5
-    if device.type == "cuda":
-        import bitsandbytes as bnb
-        optimizerD = bnb.optim.Adam8bit(netD.parameters(), lr=lr) # add bnb optimizer
-        optimizerG = bnb.optim.Adam8bit(netG.parameters(), lr=lr, betas=(beta1, 0.999)) # add bnb optimizer
-    else:
-        optimizerD = optim.Adam(netD.parameters(), lr=lr)
-        optimizerG = optim.Adam(netG.parameters(), lr=lr, betas=(beta1, 0.999))
+    # if device.type == "cuda":
+    #     import bitsandbytes as bnb
+    #     optimizerD = bnb.optim.Adam8bit(netD.parameters(), lr=lr) # add bnb optimizer
+    #     optimizerG = bnb.optim.Adam8bit(netG.parameters(), lr=lr, betas=(beta1, 0.999)) # add bnb optimizer
+    # else:
+    optimizerD = optim.Adam(netD.parameters(), lr=lr)
+    optimizerG = optim.Adam(netG.parameters(), lr=lr, betas=(beta1, 0.999))
     
     # Loss functions
     beta = 1e-3  # the coefficient to weight the adversarial loss in the perceptual loss
