@@ -87,7 +87,7 @@ def train(i_image_size, o_image_size, epochs, dataroot, batch_size, checkpoints,
     
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=workers)
 
-    accumulation_steps = 8 # we want to do model's update only after 64 images being processed
+    accumulation_steps = 4 # we want to do model's update only after 64 images being processed
 
 
     for epoch in tqdm(range(0, epochs)):
