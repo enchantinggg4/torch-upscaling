@@ -82,8 +82,7 @@ def train(i_image_size, o_image_size, epochs, dataroot, batch_size, checkpoints,
     content_loss_criterion = nn.MSELoss() # for pixel difference loss
     adversarial_loss_criterion = nn.BCEWithLogitsLoss() # for discriminator loss
 
-    print(f'{sum(p.numel() for p in netG.parameters())} parameters')
-
+    print(f'{sum(p.numel() for p in netG.parameters()):,} parameters')
     dataset = UpsampleDataset(dataroot, i_image_size, o_image_size, is_inplace=inplace_dataset)
     
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=workers)
