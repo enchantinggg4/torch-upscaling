@@ -30,40 +30,30 @@ class Model3(nn.Module):
         
         dropout = 0.2
         self.act_fn = nn.LeakyReLU(0.1, inplace=False)
-        self.some = nn.Sequential(
-             nn.Conv2d(3, 16, 3, 1, 1),
-             nn.BatchNorm2d(16),
-             self.act_fn,
 
-             nn.Conv2d(16, 32, 3, 1, 1),
-             nn.BatchNorm2d(32),
-             self.act_fn,
+        channels = (16, 32, 64, 128, 256, 512, 1024, 512, 256, 128)
 
-             nn.Conv2d(32, 64, 3, 1, 1),
-             nn.BatchNorm2d(64),
-             self.act_fn,
+        arr = [
+            nn.Conv2d(3, channels[0], 3, 1, 1),
+            nn.BatchNorm2d(channels[0]),
+            self.act_fn,
+        ]
 
-             nn.Conv2d(64, 128, 3, 1, 1),
-             nn.BatchNorm2d(128),
-             self.act_fn,
 
-             nn.Conv2d(128, 128, 3, 1, 1),
-             nn.BatchNorm2d(128),
-             self.act_fn,
+        for idx in range(0, len(channels) - 1):
+            ch = channels[idx]
+            next_ch = channels[idx + 1]
+            arr = arr + [
+                nn.Conv2d(ch, next_ch, 3, 1, 1),
+                nn.BatchNorm2d(next_ch),
+                self.act_fn,
+            ]
 
-             nn.Conv2d(128, 256, 3, 1, 1),
-             nn.BatchNorm2d(256),
-             self.act_fn,
-
-             nn.Conv2d(256, 3, 3, 1, 1),
-             nn.Tanh()
-            #  nn.BatchNorm2d(256),
-            #  self.act_fn,
-
-            #  # in_channels, out_channels, kernel_size, stride=1, padding=0, output_padding=
-            #  nn.ConvTranspose2d(256, 3, kernel_size=4, stride=2, padding=3, bias=False),
-            #  nn.Tanh()
-        )
+        arr = arr + [
+            nn.Conv2d(channels[-1], 3, 3, 1, 1),
+            nn.Tanh()
+        ]
+        self.some = nn.Sequential(*arr)
         
     def forward(self, x):
         return self.some(x)
