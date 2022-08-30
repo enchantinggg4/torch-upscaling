@@ -98,9 +98,9 @@ def train(i_image_size, o_image_size, epochs, dataroot, batch_size, checkpoints,
             lr_img = data[0].to(device, dtype=torch.float)
             hr_img = data[1].to(device, dtype=torch.float)
 
-            if device.type == "cuda":
-                lr_img = lr_img.half()
-                hr_img = hr_img.half()
+            # if device.type == "cuda":
+            #     lr_img = lr_img.half()
+            #     hr_img = hr_img.half()
             
             # GENERATOR UPDATE
 
