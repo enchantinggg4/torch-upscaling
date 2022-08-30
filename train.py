@@ -61,9 +61,9 @@ def train(i_image_size, o_image_size, epochs, dataroot, batch_size, checkpoints,
     netG = Model3().to(device)
     netD = Discriminator().to(device)
 
-    if device.type == "cuda":
-        netG = netG.half()
-        netD = netD.half()
+    # if device.type == "cuda":
+    #     netG = netG.half()
+    #     netD = netD.half()
 
     # Optimizers
 
