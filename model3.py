@@ -31,7 +31,7 @@ class Model3(nn.Module):
         dropout = 0.2
         self.act_fn = nn.LeakyReLU(0.1, inplace=False)
 
-        channels = (16, 32, 64, 128, 256, 512, 256, 256, 128)
+        channels = (16, 32, 64, 128, 256, 512, 512, 256, 256, 128)
 
         arr = [
             nn.Conv2d(3, channels[0], 3, 1, 1),
