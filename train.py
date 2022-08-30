@@ -77,9 +77,12 @@ def train(i_image_size, o_image_size, epochs, dataroot, batch_size, checkpoints,
     
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=workers)
 
+    accumulation_steps = 8 # we want to do model's update only after 64 images being processed
+
+
     for epoch in tqdm(range(0, epochs)):
         losses = np.array([])
-        for i, data in enumerate(dataloader, 0):
+        for batch_idx, data in enumerate(dataloader, 0):
             
             lr_img = data[0].to(device, dtype=torch.float)
             hr_img = data[1].to(device, dtype=torch.float)
@@ -99,14 +102,16 @@ def train(i_image_size, o_image_size, epochs, dataroot, batch_size, checkpoints,
             perceptual_loss = content_loss + beta * adversarial_loss_g
             
             # Back-prop.
-            optimizerG.zero_grad()
-            perceptual_loss.backward()
             
             losses = np.append(losses, perceptual_loss.item())
 
+            perceptual_loss = perceptual_loss / accumulation_steps
+            perceptual_loss.backward()
 
-            # Update generator
-            optimizerG.step()
+            if ((batch_idx + 1) % accumulation_steps == 0) or (batch_idx + 1 == len(dataloader)):
+                # Update generator
+                optimizerG.step()
+                optimizerG.zero_grad()
 
             # DISCRIMINATOR UPDATE
 
@@ -118,20 +123,20 @@ def train(i_image_size, o_image_size, epochs, dataroot, batch_size, checkpoints,
             adversarial_loss = adversarial_loss_criterion(sr_discriminated, torch.zeros_like(sr_discriminated)) + \
                             adversarial_loss_criterion(hr_discriminated, torch.ones_like(hr_discriminated))
 
-            # Back-prop.
-            optimizerD.zero_grad()
+            adversarial_loss = adversarial_loss / accumulation_steps
             adversarial_loss.backward()
-            
-            
-            # Update discriminator
-            optimizerD.step()
+
+            if ((batch_idx + 1) % accumulation_steps == 0) or (batch_idx + 1 == len(dataloader)):
+                # Update discriminator
+                optimizerD.step()
+                optimizerD.zero_grad()
             
             if not NO_WANDB:
                 # NO_WANDB=true
 
                 wandb.log({ 'content_loss': content_loss.item(), 'adversarial_loss_d': adversarial_loss.item(), 'adversarial_loss_g': adversarial_loss_g.item(), 'loss': perceptual_loss.item()   })
 
-                if i % 100 == 0:
+                if batch_idx % 100 == 0:
                     slides = torch.cat((
                         T.Resize((o_image_size, o_image_size))(lr_img[0:8]),
                         hr_img[0:8],
